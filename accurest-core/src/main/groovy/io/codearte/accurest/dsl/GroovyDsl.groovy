@@ -12,6 +12,9 @@ import io.codearte.accurest.dsl.internal.Response
 class GroovyDsl {
 
 	Integer priority
+	String scenarioName
+	String requiredScenarioState
+	String newScenarioState
 	Request request
 	Response response
 
@@ -24,6 +27,18 @@ class GroovyDsl {
 
 	void priority(int priority) {
 		this.priority = priority
+	}
+
+	void scenarioName(String scenarioName) {
+		this.scenarioName = scenarioName
+	}
+
+	void requiredScenarioState(String requiredScenarioState) {
+		this.requiredScenarioState = requiredScenarioState
+	}
+
+	void newScenarioState(String newScenarioState) {
+		this.newScenarioState = newScenarioState
 	}
 
 	void request(@DelegatesTo(Request) Closure closure) {

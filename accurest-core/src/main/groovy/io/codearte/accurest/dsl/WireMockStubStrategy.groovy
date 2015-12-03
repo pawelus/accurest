@@ -12,11 +12,17 @@ class WireMockStubStrategy {
 	private final WireMockRequestStubStrategy wireMockRequestStubStrategy
 	private final WireMockResponseStubStrategy wireMockResponseStubStrategy
 	private final Integer priority
+	private final String scenarioName
+	private final String requiredScenarioState
+	private final String newScenarioState
 
 	WireMockStubStrategy(GroovyDsl groovyDsl) {
 		this.wireMockRequestStubStrategy = new WireMockRequestStubStrategy(groovyDsl)
 		this.wireMockResponseStubStrategy = new WireMockResponseStubStrategy(groovyDsl)
 		this.priority = groovyDsl.priority
+		this.scenarioName = groovyDsl.scenarioName
+		this.requiredScenarioState = groovyDsl.requiredScenarioState
+		this.newScenarioState = groovyDsl.newScenarioState
 	}
 
 	@CompileDynamic
@@ -26,6 +32,15 @@ class WireMockStubStrategy {
 		ResponseDefinition response = wireMockResponseStubStrategy.buildClientResponseContent()
 		if (priority) {
 			stubMapping.priority = priority
+		}
+		if (scenarioName) {
+			stubMapping.scenarioName = scenarioName
+		}
+		if (newScenarioState) {
+			stubMapping.newScenarioState = newScenarioState
+		}
+		if (requiredScenarioState) {
+			stubMapping.requiredScenarioState = requiredScenarioState
 		}
 		stubMapping.request = request
 		stubMapping.response = response
