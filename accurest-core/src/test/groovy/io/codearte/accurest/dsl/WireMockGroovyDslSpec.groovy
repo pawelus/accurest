@@ -1444,4 +1444,60 @@ class WireMockGroovyDslSpec extends Specification implements WireMockStubVerifie
 		and:
 			stubMappingIsValidWireMockStub(wireMockStub)
 	}
+
+	def 'should convert groovy dsl stub with scenario to wireMock stub with scenario for the client side'() {
+		given:
+		GroovyDsl groovyDsl = GroovyDsl.make {
+			scenarioName('test_scenario')
+			requiredScenarioState('Started')
+			newScenarioState('State1')
+			request {
+				method('GET')
+				url $(client(regex('/[0-9]{2}')), server('/12'))
+				body """
+						{
+							"name": "Jan"
+						}
+						"""
+			}
+			response {
+				status 200
+				body("""\
+							{
+								"name": "Jan"
+							}
+						"""
+				)
+				headers {
+					header 'Content-Type': 'text/plain'
+				}
+			}
+		}
+		when:
+		String wireMockStub = new WireMockStubStrategy(groovyDsl).toWireMockClientStub()
+		then:
+		AssertionUtil.assertThatJsonsAreEqual('''
+{
+  "request" : {
+	"urlPattern" : "/[0-9]{2}",
+	"method" : "GET",
+	"bodyPatterns" : [ {
+	  "matchesJsonPath" : "$[?(@.name == 'Jan')]"
+	} ]
+  },
+  "response" : {
+	"status" : 200,
+	"body" : "{\\"name\\":\\"Jan\\"}",
+	"headers" : {
+	  "Content-Type" : "text/plain"
+	}
+  },
+  "scenarioName" : "test_scenario",
+  "requiredScenarioState" : "Started",
+  "newScenarioState" : "State1"
+}
+''', wireMockStub)
+		and:
+		stubMappingIsValidWireMockStub(wireMockStub)
+	}
 }
